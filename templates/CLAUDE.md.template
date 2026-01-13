@@ -1,0 +1,40 @@
+# [Project Name]
+
+## Overview
+[Brief description]
+
+## Tech Stack
+- Frontend: React 18 + TypeScript + Vite
+- UI: shadcn/ui + Tailwind CSS
+- Backend: Supabase
+- Mobile: Capacitor 6
+
+## Project Structure
+```
+src/
+├── components/
+├── pages/
+├── lib/
+├── hooks/
+└── types/
+```
+
+## Available Agents
+
+### Shared
+- react-shadcn-expert
+- supabase-expert
+- capacitor-expert
+
+### Project-Specific
+- [project]-context
+
+## Key Commands
+```bash
+npm run dev
+npm run build
+npx cap sync
+```
+
+## Current Focus
+[What's being worked on]
