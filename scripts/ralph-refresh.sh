@@ -38,19 +38,6 @@ echo ""
 print_repos
 echo ""
 
-# Build repo list
-REPO_LIST=""
-while read -r repo; do
-    if [ -n "$repo" ]; then
-        if [ -n "$REPO_LIST" ]; then
-            REPO_LIST="$REPO_LIST
-- $repo"
-        else
-            REPO_LIST="- $repo"
-        fi
-    fi
-done < <(get_repos)
-
 echo -e "${YELLOW}This will run a Ralph loop with up to $MAX_ITERATIONS iterations.${NC}"
 echo -e "${YELLOW}This is more thorough but uses more tokens.${NC}"
 echo ""
@@ -66,12 +53,9 @@ echo ""
 echo -e "${BLUE}Starting Ralph loop...${NC}"
 echo ""
 
-# Create modified prompt
-MODIFIED_PROMPT=$(sed "s|Scan all repositories in ~/git/ and analyze each one.|Analyze the following repositories:\n$REPO_LIST|g" "$PROMPT_FILE")
-
-# Run with Ralph loop
+# Run with Ralph loop (prompt reads repos from config/repos.conf directly)
 cd "$STACK_DIR"
-claude -p "/ralph-loop \"$MODIFIED_PROMPT\" --max-iterations $MAX_ITERATIONS"
+claude -p "/ralph-loop \"$(cat "$PROMPT_FILE")\" --max-iterations $MAX_ITERATIONS"
 
 echo ""
 echo -e "${GREEN}✓${NC} Ralph refresh complete!"

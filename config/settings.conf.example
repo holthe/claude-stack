@@ -1,0 +1,7 @@
+# Claude Stack Settings
+#
+# MODEL_OVERRIDE - Force all subagents to use a specific model
+# Leave commented to use tiered defaults (sonnet/haiku based on complexity)
+# Options: opus, sonnet, haiku
+#
+# MODEL_OVERRIDE=opus

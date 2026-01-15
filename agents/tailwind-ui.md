@@ -1,9 +1,9 @@
 ---
 name: tailwind-ui
 description: Expert in Tailwind CSS and shadcn/ui components. Use for styling, responsive design, dark mode, animations, and UI component implementation.
-model: haiku
+model: opus
 tools: Read, Write, Edit, Glob, Grep
-# Last updated: 2026-01-12
+# Last updated: 2026-01-15
 # Source repos: two-socks, maggie-v3, wedding
 # Tier: 2 (Specialized)
 ---

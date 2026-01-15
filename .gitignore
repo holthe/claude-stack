@@ -1,2 +1,3 @@
 config/repos.conf
 config/settings.conf
+.claude/settings.local.json

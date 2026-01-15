@@ -1,9 +1,9 @@
 ---
 name: type-checker
 description: Quick TypeScript type fixes, inference improvements, and strict mode compliance. Use for resolving type errors and improving type safety.
-model: haiku
+model: opus
 tools: Read, Write, Edit, Bash, Glob, Grep
-# Last updated: 2026-01-12
+# Last updated: 2026-01-15
 # Source repos: two-socks, maggie-v3, wedding
 # Tier: 3 (Utility)
 ---

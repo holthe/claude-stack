@@ -60,7 +60,7 @@ echo ""
 echo -e "${BLUE}Starting analysis...${NC}"
 echo ""
 
-# Run Claude with the prompt
+# Run Claude with the prompt (it reads repos from config/repos.conf directly)
 cd "$STACK_DIR"
 claude -p "$(cat "$PROMPT_FILE")"
 

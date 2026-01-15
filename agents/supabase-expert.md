@@ -1,9 +1,9 @@
 ---
 name: supabase-expert
 description: Expert in Supabase for authentication, PostgreSQL, RLS policies, realtime subscriptions, and edge functions. Use for database design, security policies, auth flows, and backend architecture.
-model: sonnet
+model: opus
 tools: Read, Write, Edit, Bash, Glob, Grep
-# Last updated: 2026-01-12
+# Last updated: 2026-01-15
 # Source repos: two-socks, maggie-v3, quiet-kicks, wedding
 # Tier: 1 (Core)
 ---

@@ -1,9 +1,9 @@
 ---
 name: i18n-expert
 description: Expert in internationalization with i18next and react-i18next. Use for translation setup, adding languages, extracting strings, and locale formatting.
-model: haiku
+model: opus
 tools: Read, Write, Edit, Glob, Grep
-# Last updated: 2026-01-12
+# Last updated: 2026-01-15
 # Source repos: maggie-v3, quiet-kicks, wedding
 # Tier: 2 (Specialized)
 ---

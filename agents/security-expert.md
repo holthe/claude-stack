@@ -1,9 +1,9 @@
 ---
 name: security-expert
 description: Expert in application security for React/Supabase apps. Use for authentication patterns, RLS policy review, input validation, and security auditing.
-model: sonnet
+model: opus
 tools: Read, Write, Edit, Glob, Grep
-# Last updated: 2026-01-12
+# Last updated: 2026-01-15
 # Source repos: two-socks, maggie-v3, quiet-kicks, wedding
 # Tier: 2 (Specialized)
 ---

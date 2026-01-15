@@ -1,9 +1,9 @@
 ---
 name: lint-fixer
 description: Quick ESLint configuration and fixes for React/TypeScript projects. Use for resolving lint errors and configuring rules.
-model: haiku
+model: opus
 tools: Read, Write, Edit, Bash, Glob
-# Last updated: 2026-01-12
+# Last updated: 2026-01-15
 # Source repos: two-socks, maggie-v3, quiet-kicks, wedding
 # Tier: 3 (Utility)
 ---

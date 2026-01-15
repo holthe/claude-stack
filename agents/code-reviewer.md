@@ -1,9 +1,9 @@
 ---
 name: code-reviewer
 description: Quick code review for React/TypeScript quality, patterns, and consistency. Use for reviewing PRs, commits, or specific code sections.
-model: haiku
+model: opus
 tools: Read, Glob, Grep
-# Last updated: 2026-01-12
+# Last updated: 2026-01-15
 # Source repos: two-socks, maggie-v3, quiet-kicks, wedding
 # Tier: 3 (Utility)
 ---

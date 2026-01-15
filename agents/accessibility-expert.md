@@ -1,9 +1,9 @@
 ---
 name: accessibility-expert
 description: Expert in web accessibility (WCAG), ARIA attributes, keyboard navigation, and screen reader support. Use for accessibility auditing and fixes.
-model: sonnet
+model: opus
 tools: Read, Write, Edit, Glob, Grep
-# Last updated: 2026-01-12
+# Last updated: 2026-01-15
 # Source repos: two-socks, maggie-v3, quiet-kicks, wedding
 # Tier: 2 (Specialized)
 ---

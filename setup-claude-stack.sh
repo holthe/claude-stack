@@ -63,6 +63,42 @@ REPOS_CONF
 
 echo -e "  ${GREEN}✓${NC} Created config/repos.conf"
 
+# Create settings.conf with defaults
+cat > "$STACK_DIR/config/settings.conf" << 'SETTINGS_CONF'
+# Claude Stack Settings
+#
+# MODEL_OVERRIDE - Force all subagents to use a specific model
+# Leave commented to use tiered defaults (sonnet/haiku based on complexity)
+# Options: opus, sonnet, haiku
+#
+# MODEL_OVERRIDE=opus
+SETTINGS_CONF
+
+echo -e "  ${GREEN}✓${NC} Created config/settings.conf"
+
+# Create .claude/settings.local.json with permissions for non-interactive refresh
+mkdir -p "$STACK_DIR/.claude"
+cat > "$STACK_DIR/.claude/settings.local.json" << SETTINGS_JSON
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(head:*)",
+      "Bash(wc:*)",
+      "Bash(mkdir:*)",
+      "Read($HOME/git/**)",
+      "Write($STACK_DIR/**)",
+      "Edit($STACK_DIR/**)"
+    ]
+  }
+}
+SETTINGS_JSON
+
+echo -e "  ${GREEN}✓${NC} Created .claude/settings.local.json"
+
 # -----------------------------------------------------------------------------
 # Step 3: Create helper functions script
 # -----------------------------------------------------------------------------
@@ -526,19 +562,6 @@ echo ""
 print_repos
 echo ""
 
-# Build repo list for the prompt
-REPO_LIST=""
-while read -r repo; do
-    if [ -n "$repo" ]; then
-        if [ -n "$REPO_LIST" ]; then
-            REPO_LIST="$REPO_LIST
-- $repo"
-        else
-            REPO_LIST="- $repo"
-        fi
-    fi
-done < <(get_repos)
-
 # Confirm before running
 echo -e "${YELLOW}This will analyze all configured repositories${NC}"
 echo -e "${YELLOW}and update/create agents as needed.${NC}"
@@ -555,12 +578,9 @@ echo ""
 echo -e "${BLUE}Starting analysis...${NC}"
 echo ""
 
-# Create a modified prompt with the actual repo paths
-MODIFIED_PROMPT=$(sed "s|Scan all repositories in ~/git/ and analyze each one.|Analyze the following repositories:\n$REPO_LIST|g" "$PROMPT_FILE")
-
-# Run Claude with the prompt
+# Run Claude with the prompt (it reads repos from config/repos.conf directly)
 cd "$STACK_DIR"
-claude -p "$MODIFIED_PROMPT"
+claude -p "$(cat "$PROMPT_FILE")"
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"
@@ -620,19 +640,6 @@ echo ""
 print_repos
 echo ""
 
-# Build repo list
-REPO_LIST=""
-while read -r repo; do
-    if [ -n "$repo" ]; then
-        if [ -n "$REPO_LIST" ]; then
-            REPO_LIST="$REPO_LIST
-- $repo"
-        else
-            REPO_LIST="- $repo"
-        fi
-    fi
-done < <(get_repos)
-
 echo -e "${YELLOW}This will run a Ralph loop with up to $MAX_ITERATIONS iterations.${NC}"
 echo -e "${YELLOW}This is more thorough but uses more tokens.${NC}"
 echo ""
@@ -648,12 +655,9 @@ echo ""
 echo -e "${BLUE}Starting Ralph loop...${NC}"
 echo ""
 
-# Create modified prompt
-MODIFIED_PROMPT=$(sed "s|Scan all repositories in ~/git/ and analyze each one.|Analyze the following repositories:\n$REPO_LIST|g" "$PROMPT_FILE")
-
-# Run with Ralph loop
+# Run with Ralph loop (prompt reads repos from config/repos.conf directly)
 cd "$STACK_DIR"
-claude -p "/ralph-loop \"$MODIFIED_PROMPT\" --max-iterations $MAX_ITERATIONS"
+claude -p "/ralph-loop \"$(cat "$PROMPT_FILE")\" --max-iterations $MAX_ITERATIONS"
 
 echo ""
 echo -e "${GREEN}✓${NC} Ralph refresh complete!"

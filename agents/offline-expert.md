@@ -1,9 +1,9 @@
 ---
 name: offline-expert
 description: Expert in offline-first architecture, sync queues, localStorage caching, and service workers. Use for implementing offline support and data synchronization.
-model: sonnet
+model: opus
 tools: Read, Write, Edit, Bash, Glob, Grep
-# Last updated: 2026-01-12
+# Last updated: 2026-01-15
 # Source repos: two-socks, maggie-v3, quiet-kicks, wedding
 # Tier: 2 (Specialized)
 ---
