@@ -3,6 +3,17 @@
 ## Overview
 This prompt analyzes ONLY the repositories configured in `~/git/claude-stack/config/repos.conf`, discovers patterns, audits existing agents for drift, identifies gaps, and generates an optimal subagent architecture for a React + Supabase + Capacitor + shadcn/ui stack.
 
+## Settings
+
+First, read the settings file to check for model override:
+```bash
+cat ~/git/claude-stack/config/settings.conf
+```
+
+If `MODEL_OVERRIDE` is set (not commented), use that model for ALL agents regardless of tier. Valid values: `opus`, `sonnet`, `haiku`. If not set or commented out, use the default tiered approach (sonnet/haiku based on complexity).
+
+**Store this setting and apply it in Phase 8 when creating/updating agents.**
+
 ## Repositories to Analyze
 
 **IMPORTANT: Only analyze repositories listed in `~/git/claude-stack/config/repos.conf`.**
@@ -361,7 +372,7 @@ Based on all analysis, design the optimal hierarchy:
 These agents are used in nearly every coding session across all projects.
 - Should be highly polished
 - Reference real patterns from repos
-- Model: sonnet (balance of capability and cost)
+- Model: sonnet (default, unless MODEL_OVERRIDE is set)
 
 ### Tier 2: Specialized Shared Agents (Important, used frequently)
 Cross-cutting concerns that apply to multiple projects but not every session.
@@ -516,6 +527,8 @@ For each agent marked UPDATE:
 6. Validate no broken references
 
 ### 8.3 Create New Agents
+
+**IMPORTANT:** If `MODEL_OVERRIDE` is set in settings.conf, use that model for ALL agents. Otherwise use the tier defaults.
 
 Each new agent must follow this template:
 
