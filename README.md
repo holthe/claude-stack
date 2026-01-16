@@ -10,12 +10,10 @@ Shared and project-specific Claude Code agents.
 ./scripts/add-repo.sh ~/work/client-project
 ./scripts/add-repo.sh .  # Current directory
 
-# 2. Save analyze-and-update.md to prompts/
-
-# 3. Generate agents
+# 2. Generate agents
 ./scripts/refresh-agents.sh
 
-# 4. Verify
+# 3. Verify
 ./scripts/list-agents.sh
 ```
 
