@@ -53,9 +53,19 @@ echo ""
 echo -e "${BLUE}Starting Ralph loop...${NC}"
 echo ""
 
-# Run with Ralph loop (prompt reads repos from config/repos.conf directly)
+# Build --add-dir arguments for each configured repo
+ADD_DIR_ARGS=""
+while IFS= read -r repo; do
+    if [ -n "$repo" ]; then
+        ADD_DIR_ARGS="$ADD_DIR_ARGS --add-dir $repo"
+    fi
+done < <(get_repos)
+
+# Run with Ralph loop, granting access to all configured repos
+# Substitute {{STACK_DIR}} placeholder with actual path
 cd "$STACK_DIR"
-claude -p "/ralph-loop \"$(cat "$PROMPT_FILE")\" --max-iterations $MAX_ITERATIONS"
+PROMPT_CONTENT=$(cat "$PROMPT_FILE" | sed "s|{{STACK_DIR}}|$STACK_DIR|g")
+claude $ADD_DIR_ARGS -p "/ralph-loop \"$PROMPT_CONTENT\" --max-iterations $MAX_ITERATIONS"
 
 echo ""
 echo -e "${GREEN}✓${NC} Ralph refresh complete!"

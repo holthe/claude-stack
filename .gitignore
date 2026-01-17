@@ -1,3 +1,6 @@
 config/repos.conf
 config/settings.conf
 .claude/settings.local.json
+
+# Analysis output is generated per-user by refresh-agents.sh
+analysis/

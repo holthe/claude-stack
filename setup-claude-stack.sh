@@ -17,8 +17,9 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Configuration
-STACK_DIR="$HOME/git/claude-stack"
+# Configuration - derive STACK_DIR from this script's location
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+STACK_DIR="$SCRIPT_DIR"
 USER_AGENTS="$HOME/.claude/agents"
 
 echo -e "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"
@@ -54,7 +55,7 @@ cat > "$STACK_DIR/config/repos.conf" << 'REPOS_CONF'
 #   /home/peter/work/client-project
 #   /Users/peter/Projects/side-project
 #
-# After editing, run: ~/git/claude-stack/scripts/refresh-agents.sh
+# After editing, run: ./scripts/refresh-agents.sh (from claude-stack directory)
 #
 
 # Add your repositories below:
@@ -117,8 +118,10 @@ export BLUE='\033[0;34m'
 export CYAN='\033[0;36m'
 export NC='\033[0m'
 
-# Paths
-export STACK_DIR="$HOME/git/claude-stack"
+# Paths - derive STACK_DIR from this script's location
+# common.sh is in scripts/, so STACK_DIR is one level up
+COMMON_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export STACK_DIR="$(cd "$COMMON_SCRIPT_DIR/.." && pwd)"
 export USER_AGENTS="$HOME/.claude/agents"
 export REPOS_CONF="$STACK_DIR/config/repos.conf"
 
