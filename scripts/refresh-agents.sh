@@ -69,8 +69,10 @@ while IFS= read -r repo; do
 done < <(get_repos)
 
 # Run Claude with the prompt, granting access to all configured repos
+# Substitute {{STACK_DIR}} placeholder with actual path
 cd "$STACK_DIR"
-claude $ADD_DIR_ARGS -p "$(cat "$PROMPT_FILE")"
+PROMPT_CONTENT=$(cat "$PROMPT_FILE" | sed "s|{{STACK_DIR}}|$STACK_DIR|g")
+claude $ADD_DIR_ARGS -p "$PROMPT_CONTENT"
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"
