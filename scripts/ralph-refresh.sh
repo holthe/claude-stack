@@ -3,13 +3,21 @@
 # Refresh agents using Ralph Wiggum loop for thorough execution
 #
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
 PROMPT_FILE="$STACK_DIR/prompts/analyze-and-update.md"
 MAX_ITERATIONS="${1:-25}"
+
+# Validate MAX_ITERATIONS is a positive integer
+if ! validate_positive_integer "$MAX_ITERATIONS" "max-iterations"; then
+    echo ""
+    echo "Usage: $0 [max-iterations]"
+    echo "  max-iterations: positive integer (default: 25)"
+    exit 1
+fi
 
 echo -e "${BLUE}╔════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${BLUE}║       Claude Code Agent Refresh (Ralph Mode)               ║${NC}"
@@ -53,9 +61,24 @@ echo ""
 echo -e "${BLUE}Starting Ralph loop...${NC}"
 echo ""
 
-# Run with Ralph loop (prompt reads repos from config/repos.conf directly)
-cd "$STACK_DIR"
-claude -p "/ralph-loop \"$(cat "$PROMPT_FILE")\" --max-iterations $MAX_ITERATIONS"
+# Build --add-dir arguments using array (safe for paths with spaces)
+ADD_DIR_ARGS=()
+while IFS= read -r repo; do
+    if [ -n "$repo" ]; then
+        ADD_DIR_ARGS+=("--add-dir" "$repo")
+    fi
+done < <(get_repos)
+
+# Substitute {{STACK_DIR}} placeholder with actual path
+# Use a temp file to avoid issues with large prompts and special characters
+TEMP_PROMPT=$(mktemp)
+trap 'rm -f "$TEMP_PROMPT"' EXIT
+
+sed "s|{{STACK_DIR}}|$STACK_DIR|g" "$PROMPT_FILE" > "$TEMP_PROMPT"
+
+# Run with Ralph loop, granting access to all configured repos
+cd "$STACK_DIR" || exit 1
+claude "${ADD_DIR_ARGS[@]}" -p "/ralph-loop $(cat "$TEMP_PROMPT") --max-iterations $MAX_ITERATIONS"
 
 echo ""
 echo -e "${GREEN}✓${NC} Ralph refresh complete!"

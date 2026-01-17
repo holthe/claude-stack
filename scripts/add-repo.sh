@@ -3,12 +3,12 @@
 # Add a repository to the Claude Code Agent Stack
 #
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
-if [ -z "$1" ]; then
+if [ -z "${1:-}" ]; then
     echo -e "${BLUE}Add Repository to Claude Code Agent Stack${NC}"
     echo ""
     echo "Usage: $0 <path-to-repo>"
@@ -18,7 +18,7 @@ if [ -z "$1" ]; then
     echo "  $0 /home/peter/work/client-project"
     echo "  $0 .                    # Current directory"
     echo ""
-    
+
     if check_repos_configured 2>/dev/null; then
         echo ""
         print_repos
@@ -43,6 +43,12 @@ else
     REPO_PATH="${INPUT_PATH/#\~/$HOME}"
 fi
 
+# Validate the path
+if ! validate_path "$REPO_PATH"; then
+    echo -e "${RED}❌ Invalid path: $REPO_PATH${NC}"
+    exit 1
+fi
+
 # Verify it's a directory
 if [ ! -d "$REPO_PATH" ]; then
     echo -e "${RED}❌ Not a directory: $REPO_PATH${NC}"
@@ -59,10 +65,17 @@ if [ ! -d "$REPO_PATH/.git" ]; then
     fi
 fi
 
-REPO_NAME=$(basename "$REPO_PATH")
+# Get sanitized repo name for use in filenames
+REPO_NAME_RAW=$(basename "$REPO_PATH")
+REPO_NAME=$(sanitize_filename "$REPO_NAME_RAW")
 
-# Check if already added
-if grep -q "^$REPO_PATH$" "$REPOS_CONF" 2>/dev/null; then
+# If sanitization removed everything, use a default
+if [ -z "$REPO_NAME" ]; then
+    REPO_NAME="project"
+fi
+
+# Check if already added (use grep -F for fixed string matching)
+if grep -Fxq "$REPO_PATH" "$REPOS_CONF" 2>/dev/null; then
     echo -e "${YELLOW}⚠️  Repository already configured: $REPO_NAME${NC}"
     exit 0
 fi
@@ -117,7 +130,7 @@ echo -e "${GREEN}✓${NC} Created ${REPO_NAME}-context.md agent"
 # Create CLAUDE.md if it doesn't exist
 if [ ! -f "$REPO_PATH/CLAUDE.md" ]; then
     cat > "$REPO_PATH/CLAUDE.md" << CLAUDE_MD
-# ${REPO_NAME}
+# ${REPO_NAME_RAW}
 
 ## Overview
 [Brief description of the project]

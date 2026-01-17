@@ -4,12 +4,12 @@
 # (Does not delete the repo itself, just removes from config)
 #
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
 
-if [ -z "$1" ]; then
+if [ -z "${1:-}" ]; then
     echo -e "${BLUE}Remove Repository from Claude Code Agent Stack${NC}"
     echo ""
     echo "Usage: $0 <repo-name-or-path>"
@@ -17,7 +17,7 @@ if [ -z "$1" ]; then
     echo "This removes the repo from the config file."
     echo "It does NOT delete the repository or its agents."
     echo ""
-    
+
     if check_repos_configured 2>/dev/null; then
         echo ""
         print_repos
@@ -29,7 +29,7 @@ INPUT="$1"
 
 # Find matching path
 MATCHED_PATH=""
-while read -r repo; do
+while IFS= read -r repo; do
     if [ -n "$repo" ]; then
         name=$(basename "$repo")
         expanded_input="${INPUT/#\~/$HOME}"
@@ -44,11 +44,11 @@ if [ -z "$MATCHED_PATH" ]; then
     echo -e "${RED}❌ Repository not found in config: $INPUT${NC}"
     echo ""
     echo "Configured repositories:"
-    get_repos | while read -r repo; do
+    while IFS= read -r repo; do
         if [ -n "$repo" ]; then
             echo "  - $(basename "$repo") ($repo)"
         fi
-    done
+    done < <(get_repos)
     exit 1
 fi
 
@@ -58,9 +58,18 @@ echo -e "Removing ${CYAN}$REPO_NAME${NC} from config..."
 echo -e "  Path: $MATCHED_PATH"
 echo ""
 
-# Create temp file without the matched line
-grep -v "^$MATCHED_PATH$" "$REPOS_CONF" > "$REPOS_CONF.tmp" || true
-mv "$REPOS_CONF.tmp" "$REPOS_CONF"
+# Create temp file without the matched line (atomic operation)
+# Use grep -Fxv for fixed string, exact line match, inverted
+TMPFILE=$(mktemp "$REPOS_CONF.XXXXXX")
+trap 'rm -f "$TMPFILE"' EXIT
+
+# grep -Fxv: Fixed string, exact line match, invert (exclude matches)
+# The || true handles the case where the file becomes empty (grep returns 1)
+grep -Fxv "$MATCHED_PATH" "$REPOS_CONF" > "$TMPFILE" || true
+mv -f "$TMPFILE" "$REPOS_CONF"
+
+# Clear trap since file was successfully moved
+trap - EXIT
 
 echo -e "${GREEN}✓${NC} Removed from config"
 echo ""

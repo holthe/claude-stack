@@ -4,7 +4,7 @@
 # Run monthly or after major project changes
 #
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/common.sh"
@@ -60,19 +60,24 @@ echo ""
 echo -e "${BLUE}Starting analysis...${NC}"
 echo ""
 
-# Build --add-dir arguments for each configured repo
-ADD_DIR_ARGS=""
+# Build --add-dir arguments using array (safe for paths with spaces)
+ADD_DIR_ARGS=()
 while IFS= read -r repo; do
     if [ -n "$repo" ]; then
-        ADD_DIR_ARGS="$ADD_DIR_ARGS --add-dir $repo"
+        ADD_DIR_ARGS+=("--add-dir" "$repo")
     fi
 done < <(get_repos)
 
-# Run Claude with the prompt, granting access to all configured repos
 # Substitute {{STACK_DIR}} placeholder with actual path
-cd "$STACK_DIR"
-PROMPT_CONTENT=$(cat "$PROMPT_FILE" | sed "s|{{STACK_DIR}}|$STACK_DIR|g")
-claude $ADD_DIR_ARGS -p "$PROMPT_CONTENT"
+# Use a temp file to avoid issues with large prompts and special characters
+TEMP_PROMPT=$(mktemp)
+trap 'rm -f "$TEMP_PROMPT"' EXIT
+
+sed "s|{{STACK_DIR}}|$STACK_DIR|g" "$PROMPT_FILE" > "$TEMP_PROMPT"
+
+# Run Claude with the prompt, granting access to all configured repos
+cd "$STACK_DIR" || exit 1
+claude "${ADD_DIR_ARGS[@]}" -p "$(cat "$TEMP_PROMPT")"
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"
