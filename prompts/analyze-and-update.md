@@ -1,13 +1,13 @@
 # Task: Analyze Repositories and Generate/Update Subagent Architecture
 
 ## Overview
-This prompt analyzes ONLY the repositories configured in `~/git/claude-stack/config/repos.conf`, discovers patterns, audits existing agents for drift, identifies gaps, and generates an optimal subagent architecture for a React + Supabase + Capacitor + shadcn/ui stack.
+This prompt analyzes ONLY the repositories configured in `{{STACK_DIR}}/config/repos.conf`, discovers patterns, audits existing agents for drift, identifies gaps, and generates an optimal subagent architecture for a React + Supabase + Capacitor + shadcn/ui stack.
 
 ## Settings
 
 First, read the settings file to check for model override:
 ```bash
-cat ~/git/claude-stack/config/settings.conf
+cat {{STACK_DIR}}/config/settings.conf
 ```
 
 If `MODEL_OVERRIDE` is set (not commented), use that model for ALL agents regardless of tier. Valid values: `opus`, `sonnet`, `haiku`. If not set or commented out, use the default tiered approach (sonnet/haiku based on complexity).
@@ -16,11 +16,11 @@ If `MODEL_OVERRIDE` is set (not commented), use that model for ALL agents regard
 
 ## Repositories to Analyze
 
-**IMPORTANT: Only analyze repositories listed in `~/git/claude-stack/config/repos.conf`.**
+**IMPORTANT: Only analyze repositories listed in `{{STACK_DIR}}/config/repos.conf`.**
 
 First, read the config file and extract the repository paths:
 ```bash
-cat ~/git/claude-stack/config/repos.conf
+cat {{STACK_DIR}}/config/repos.conf
 ```
 
 Analyze ONLY those repositories. Do NOT scan ~/git/ or any other directories. If a path in the config doesn't exist, skip it and note it in the report.
@@ -32,7 +32,7 @@ Analyze ONLY those repositories. Do NOT scan ~/git/ or any other directories. If
 Before analyzing repos, catalog what already exists:
 
 1. Scan `~/.claude/agents/` for user-level agents
-2. Scan `~/git/claude-stack/agents/` if it exists
+2. Scan `{{STACK_DIR}}/agents/` if it exists
 3. For each configured repo, scan `[repo]/.claude/agents/` for project agents
 4. For each existing agent, extract:
    - Name and description
@@ -43,13 +43,13 @@ Before analyzing repos, catalog what already exists:
    - Patterns/file paths it references
    - Which repos it mentions
 
-Create: `~/git/claude-stack/analysis/existing-agents.md`
+Create: `{{STACK_DIR}}/analysis/existing-agents.md`
 
 ---
 
 ## Phase 1: Deep Discovery
 
-For each repository listed in `~/git/claude-stack/config/repos.conf`:
+For each repository listed in `{{STACK_DIR}}/config/repos.conf`:
 
 ### 1.1 Configuration Files
 - Read package.json (dependencies, scripts, versions)
@@ -109,7 +109,7 @@ For each repository listed in `~/git/claude-stack/config/repos.conf`:
 - Find inline documentation patterns
 - Check for API documentation
 
-Create: `~/git/claude-stack/analysis/repo-discovery.md` with a section per repo.
+Create: `{{STACK_DIR}}/analysis/repo-discovery.md` with a section per repo.
 
 ---
 
@@ -177,7 +177,7 @@ Compare all configured repos and extract common patterns:
 - Commit message format
 - PR patterns
 
-Create: `~/git/claude-stack/analysis/shared-patterns.md`
+Create: `{{STACK_DIR}}/analysis/shared-patterns.md`
 
 ---
 
@@ -229,7 +229,7 @@ Compare existing agents against current repo state:
 | ⬆️ UPGRADE | Needs more capable model |
 | ⬇️ DOWNGRADE | Can use cheaper model |
 
-Create: `~/git/claude-stack/analysis/agent-drift.md`
+Create: `{{STACK_DIR}}/analysis/agent-drift.md`
 
 ---
 
@@ -312,7 +312,7 @@ For each gap discovered, document:
 - Severity (critical/important/nice-to-have)
 - Proposed agent to fill gap
 
-Create: `~/git/claude-stack/analysis/gap-analysis.md`
+Create: `{{STACK_DIR}}/analysis/gap-analysis.md`
 
 ---
 
@@ -360,7 +360,7 @@ For each configured repository, document deep domain knowledge:
 - Planned features (from docs/issues)
 - Upcoming integrations
 
-Create: `~/git/claude-stack/analysis/project-specific.md`
+Create: `{{STACK_DIR}}/analysis/project-specific.md`
 
 ---
 
@@ -403,7 +403,7 @@ Deep knowledge of one project's unique domain.
 - **Priority:** Essential / Important / Nice-to-have
 ```
 
-Create: `~/git/claude-stack/analysis/agent-architecture.md`
+Create: `{{STACK_DIR}}/analysis/agent-architecture.md`
 
 ---
 
@@ -504,7 +504,7 @@ Move to deprecated/ with note
 |-------|--------|----------|-------|--------|
 | ... | ... | ... | ... | ... |
 
-Create: `~/git/claude-stack/analysis/change-plan.md`
+Create: `{{STACK_DIR}}/analysis/change-plan.md`
 
 ---
 
@@ -513,7 +513,7 @@ Create: `~/git/claude-stack/analysis/change-plan.md`
 ### 8.1 Create Directory Structure
 
 ```bash
-mkdir -p ~/git/claude-stack/{agents,deprecated,analysis,scripts,prompts,templates}
+mkdir -p {{STACK_DIR}}/{agents,deprecated,analysis,scripts,prompts,templates}
 ```
 
 ### 8.2 Update Existing Agents
@@ -619,7 +619,7 @@ For each deprecated agent:
 ---
 [original content]
 ```
-2. Move to `~/git/claude-stack/deprecated/`
+2. Move to `{{STACK_DIR}}/deprecated/`
 
 ### 8.6 Update Project CLAUDE.md Files
 
@@ -672,7 +672,7 @@ For each configured project, create/update `CLAUDE.md`:
 
 ### 9.1 Save This Prompt
 
-Ensure this prompt is saved at `~/git/claude-stack/prompts/analyze-and-update.md`
+Ensure this prompt is saved at `{{STACK_DIR}}/prompts/analyze-and-update.md`
 
 ---
 
@@ -682,8 +682,8 @@ After all changes:
 
 ### 10.1 File Structure Check
 Verify all expected files exist:
-- [ ] ~/git/claude-stack/agents/ contains all shared agents
-- [ ] ~/.claude/agents symlink points to ~/git/claude-stack/agents/
+- [ ] {{STACK_DIR}}/agents/ contains all shared agents
+- [ ] ~/.claude/agents symlink points to {{STACK_DIR}}/agents/
 - [ ] Each configured project has .claude/agents/ with context agent
 - [ ] Each configured project has updated CLAUDE.md
 - [ ] Scripts are executable
@@ -734,7 +734,7 @@ Create final summary:
 **Next Refresh:** [date + 30 days]
 ```
 
-Create: `~/git/claude-stack/analysis/execution-summary.md`
+Create: `{{STACK_DIR}}/analysis/execution-summary.md`
 
 ---
 
