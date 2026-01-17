@@ -11,8 +11,10 @@ export BLUE='\033[0;34m'
 export CYAN='\033[0;36m'
 export NC='\033[0m'
 
-# Paths
-export STACK_DIR="$HOME/git/claude-stack"
+# Paths - derive STACK_DIR from this script's location
+# common.sh is in scripts/, so STACK_DIR is one level up
+COMMON_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export STACK_DIR="$(cd "$COMMON_SCRIPT_DIR/.." && pwd)"
 export USER_AGENTS="$HOME/.claude/agents"
 export REPOS_CONF="$STACK_DIR/config/repos.conf"
 
