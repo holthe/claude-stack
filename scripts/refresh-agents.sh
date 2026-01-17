@@ -60,9 +60,17 @@ echo ""
 echo -e "${BLUE}Starting analysis...${NC}"
 echo ""
 
-# Run Claude with the prompt (it reads repos from config/repos.conf directly)
+# Build --add-dir arguments for each configured repo
+ADD_DIR_ARGS=""
+while IFS= read -r repo; do
+    if [ -n "$repo" ]; then
+        ADD_DIR_ARGS="$ADD_DIR_ARGS --add-dir $repo"
+    fi
+done < <(get_repos)
+
+# Run Claude with the prompt, granting access to all configured repos
 cd "$STACK_DIR"
-claude -p "$(cat "$PROMPT_FILE")"
+claude $ADD_DIR_ARGS -p "$(cat "$PROMPT_FILE")"
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════════════════════════╗${NC}"
